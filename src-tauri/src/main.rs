@@ -11,7 +11,7 @@ mod commands;
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![commands::create_folder])
+        .invoke_handler(tauri::generate_handler![commands::create_folder, commands::get_the_directory])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
