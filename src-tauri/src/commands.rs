@@ -1,4 +1,7 @@
-use std::{fmt::format, fs::{self, DirEntry}, path, vec};
+extern crate chrono;
+use std::{fmt::format, fs::{self, DirEntry}, path, time::SystemTime, vec};
+use chrono::offset::Utc;
+use chrono::DateTime;
 
 #[tauri::command]
 pub async fn create_folder(folder_name: String) -> path::PathBuf {
@@ -20,13 +23,14 @@ pub async fn create_folder(folder_name: String) -> path::PathBuf {
 struct SendFile {
     msg: String,
     files: Vec<FileInfo>,
-    years: i32
+    years: SystemTime
 }
 
-struct FileInfo {
+#[derive(Debug)]
+pub struct FileInfo {
     name: String,
     path: String,
-    year: i32
+    year: String
 }
 
 // TODO: Return RESULT to the frontend
@@ -38,10 +42,13 @@ pub async fn get_the_directory(directory: String) -> Result<String, String> {
         Err(err_msg.into())
     }
     else {
-        // get_all_files(directory).await;
-        let files: Vec<String> = get_all_files(directory).await;
-        let files_str: String = files.join(", ");
-        let ok_msg: String = format!("[🦀] Success!\nDirectory: {}\nFiles: {:?}", directory_log, files_str);
+        let files: Vec<FileInfo> = get_all_files(directory).await;
+        let years: Vec<String> = get_all_years(&files).await;
+        let ok_msg: String = format!("[🦀] Success!\nDirectory: {}\nFiles: {:?}\nYears: {:?}", directory_log, files, years);
+
+        // let files_str: String = files.join(", ");
+        // let ok_msg: String = format!("[🦀] Success!\nDirectory: {}\nFiles: {:?}", directory_log, files_str);
+        // let ok_msg: String = format!("[🦀] Success!");
         Ok(ok_msg.into())
     }
 }
@@ -56,21 +63,26 @@ pub async fn get_all_files(path: String) -> Vec<FileInfo>{
             for entry in entries{
                 match entry{
                     Ok(entry) => {
-                        let file_path = entry.file_name().to_str().unwrap().to_string();
-                        files.push(file_path.clone());
-                        let example_dir = format!("{}/{}", path.clone(), "test");
-                        let _ = fs::create_dir(example_dir);
-
+                        
+                        // files.push(file_path.clone());
+                        // let example_dir = format!("{}/{}", path.clone(), "test");
+                        // let _ = fs::create_dir(example_dir);
+                        
+                        let filename = entry.file_name().to_str().unwrap().to_string();
+                       
+                        let datetime: DateTime<Utc> = entry.metadata().unwrap().created().unwrap().into();
+                        let year: String = datetime.format("%Y").to_string();
             
                         let file = FileInfo {
-                            name: file_path.clone(),
+                            name: filename.clone(),
                             path: path.clone(),
-                            year: entry.metadata().unwrap().created().unwrap()
-                        } ;       
-                    
+                            year: year // <--- probably kena tengok ni kemudian
+                        };       
+
+                        files.push(file)
+                        
                         // TODO: 
                         // 1. Get all the file actual path together with the file name
-                        
                         // 2. Get all the years from the year
                         // 3. Return it into a SendFile contains directory, files, years
                         
@@ -89,6 +101,18 @@ pub async fn get_all_files(path: String) -> Vec<FileInfo>{
     files
 }
 
+pub async fn get_all_years(files: &Vec<FileInfo>) -> Vec<String>{
+    let mut available_years: Vec<String> = Vec::new();
+    for file in files {
+        let year = file.year.clone();
+        if !available_years.contains(&year) {
+           available_years.push(year) 
+        }
+    }
+    available_years
+}
+
+// TEMP!
 // #[tauri::command]
 // pub async fn get_all_files(path: String) -> Vec<String>{
 //     // let path = ".";
