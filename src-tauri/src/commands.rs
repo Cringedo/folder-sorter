@@ -2,6 +2,7 @@ extern crate chrono;
 use std::{fmt::format, fs::{self, DirEntry}, path, time::SystemTime, vec};
 use chrono::offset::Utc;
 use chrono::DateTime;
+use std::path::Path;
 
 #[tauri::command]
 pub async fn create_folder(folder_name: String) -> path::PathBuf {
@@ -44,6 +45,8 @@ pub async fn get_the_directory(directory: String) -> Result<String, String> {
     else {
         let files: Vec<FileInfo> = get_all_files(directory).await;
         let years: Vec<String> = get_all_years(&files).await;
+        create_dir_by_years(directory_log, &years).await;
+        copy_files_into_folders(directory_log, &files).await;
         let ok_msg: String = format!("[🦀] Success!\nDirectory: {}\nFiles: {:?}\nYears: {:?}", directory_log, files, years);
 
         // let files_str: String = files.join(", ");
@@ -110,6 +113,25 @@ pub async fn get_all_years(files: &Vec<FileInfo>) -> Vec<String>{
         }
     }
     available_years
+}
+
+pub async fn create_dir_by_years(directory: &String, years: &Vec<String>) {
+    for year in years {
+        let folder_dir = format!("{}/{}", directory, year);
+        match fs::create_dir(folder_dir.clone()){
+            Ok(_) => print!("Success! Years for folders have been created!"),
+            Err(e) => print!("{}", e)
+        }
+    }
+}
+
+pub async fn copy_files_into_folders(directory: &String, files: &Vec<FileInfo>){
+    for file in files{
+        // let folder_dir = format!("{}/{}", directory, file.year);
+        let old_folder_dir = Path::new(directory).join(&file.name);
+        let new_folder_dir = Path::new(directory).join(&file.year).join(&file.name);
+        let _ = fs::copy(old_folder_dir, new_folder_dir);
+    }
 }
 
 // TEMP!
