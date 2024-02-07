@@ -43,8 +43,8 @@
     "windows": [
       {
         "fullscreen": false,
-        "resizable": true,
-        "title": "folder-sorter",
+        "resizable": false,
+        "title": "Cringedo's Folder Sorter",
         "width": 800,
         "height": 600
       }

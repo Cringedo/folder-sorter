@@ -45,15 +45,18 @@ function App() {
   }, [folderDirectory])
 
   return (
-    <div>
-      <h1> File Manager </h1>
-      <div>
-        Folder Directory: {folderDirectory}
+    <div className="main_div">
+      <div className="header_div">
+      <h1 className="header_text"> Cringedo's File Sorter </h1>
       </div>
-      <div> 
+      <div className="side_div">
+        Folder Directory: {folderDirectory}
         <button onClick={select_directory} />
       </div>
+      <div> 
+      </div>
     </div>
+    
   );
 }
 

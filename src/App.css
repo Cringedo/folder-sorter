@@ -1,7 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+
 .logo.vite:hover {
   filter: drop-shadow(0 0 2em #747bff);
 }
 
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafb);
+}
+
+.main_div{
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  font-family: 'Roboto', sans-serif;
+}
+
+.header_div {
+  display: flex;
+  flex: auto;
+  height: 100vh;
+  width: 30%;
+  justify-content: center;
+  justify-items: center;
+  align-items: center;
+ 
+}
+
+.header_text {
+  display: flex;
+  flex: auto;
+  margin: auto;
+  width: 50%;
+  height: 50%;
+  justify-content: center;
+  align-items: center; /* Added this line */
+  text-align: center;
+  
+  font-weight: 900;
+  border-right: 2px black solid;
+  padding: 5px;
+}
+
+.side_div {
+  background: rgb(255, 214, 214);
+  display: flex;
+  flex: auto;
+  flex-direction: column;
+  width: 70%;
+  height: 100vh;
+  justify-content: center;
+  justify-items: center;
+  align-items: start;
+  padding-left: 10px;
 }
