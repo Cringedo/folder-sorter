@@ -2,6 +2,7 @@ extern crate chrono;
 use std::{fmt::format, fs::{self, DirEntry}, path, time::SystemTime, vec};
 use chrono::offset::Utc;
 use chrono::DateTime;
+use tauri::api::file;
 use std::path::Path;
 
 #[tauri::command]
@@ -21,17 +22,17 @@ pub async fn create_folder(folder_name: String) -> path::PathBuf {
     path::PathBuf::from(root_path)
 }
 
-struct SendFile {
-    msg: String,
-    files: Vec<FileInfo>,
-    years: SystemTime
+#[derive(Debug)]
+enum FileType {
+    Image, Video, Music, Executable, Other
 }
 
 #[derive(Debug)]
 pub struct FileInfo {
     name: String,
     path: String,
-    year: String
+    year: String,
+    file_type: FileType
 }
 
 // TODO: Return RESULT to the frontend
@@ -47,6 +48,8 @@ pub async fn get_the_directory(directory: String) -> Result<String, String> {
         let years: Vec<String> = get_all_years(&files).await;
         create_dir_by_years(directory_log, &years).await;
         copy_files_into_folders(directory_log, &files).await;
+
+        // let ok_msg: String = format!("[🦀] Success!\nDirectory: {}\nFiles: {:?}\nYears: {:?}", directory_log, files, years);
         let ok_msg: String = format!("[🦀] Success!\nDirectory: {}\nFiles: {:?}\nYears: {:?}", directory_log, files, years);
 
         // let files_str: String = files.join(", ");
@@ -58,7 +61,6 @@ pub async fn get_the_directory(directory: String) -> Result<String, String> {
 
 #[tauri::command]
 pub async fn get_all_files(path: String) -> Vec<FileInfo>{
-    // let path = ".";
     let dir = fs::read_dir(path.clone());
     let mut files: Vec<FileInfo> = Vec::new();
     match dir {
@@ -67,28 +69,32 @@ pub async fn get_all_files(path: String) -> Vec<FileInfo>{
                 match entry{
                     Ok(entry) => {
                         
-                        // files.push(file_path.clone());
-                        // let example_dir = format!("{}/{}", path.clone(), "test");
-                        // let _ = fs::create_dir(example_dir);
-                        
+                        // Get the file name
                         let filename = entry.file_name().to_str().unwrap().to_string();
                        
+                        // Get the file year
                         let datetime: DateTime<Utc> = entry.metadata().unwrap().created().unwrap().into();
-                        let year: String = datetime.format("%Y").to_string();
-            
+                        let file_year: String = datetime.format("%Y").to_string();
+                        
+                        // Get the file format/type  
+                        let file_ext: &str = filename.split(".").last().unwrap();
+                        let file_type: FileType;
+                        match file_ext {
+                            "wav" => file_type = FileType::Music,
+                            "mp3" => file_type = FileType::Video,
+                            ".png" => file_type = FileType::Image,
+                            _ => file_type = FileType::Other
+                        }
+                        
+                        // Compile them into a struct 
                         let file = FileInfo {
                             name: filename.clone(),
                             path: path.clone(),
-                            year: year // <--- probably kena tengok ni kemudian
+                            year: file_year, // <--- probably kena tengok ni kemudian
+                            file_type: file_type
                         };       
 
                         files.push(file)
-                        
-                        // TODO: 
-                        // 1. Get all the file actual path together with the file name
-                        // 2. Get all the years from the year
-                        // 3. Return it into a SendFile contains directory, files, years
-                        
                     },
                     Err(_) => {
                 
@@ -125,9 +131,9 @@ pub async fn create_dir_by_years(directory: &String, years: &Vec<String>) {
     }
 }
 
+// Copy to the files into the folders
 pub async fn copy_files_into_folders(directory: &String, files: &Vec<FileInfo>){
     for file in files{
-        // let folder_dir = format!("{}/{}", directory, file.year);
         let old_folder_dir = Path::new(directory).join(&file.name);
         let new_folder_dir = Path::new(directory).join(&file.year).join(&file.name);
         let _ = fs::copy(old_folder_dir, new_folder_dir);
