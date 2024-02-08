@@ -67,6 +67,7 @@
   /* display: flex;
   flex: auto; */
   font-weight: 700;
+  padding: 2px;
 }
 
 .side_components_border{
@@ -91,15 +92,30 @@
 }
 
 .radio-div > * {
-  transition: ease-in 1s;
   border-right: 2px black solid;
   padding: 2px;
 }
 
-.radio-div > *:hover {
+/* .radio-div > *:hover {
   font-weight: 600;
-  
+} */
+
+#radio-year:checked + #label-year {
+  text-decoration-line: underline;
 }
 
+#radio-filetype:checked + #label-filetype {
+  text-decoration-line: underline;
+}
 
+.button-submit {
+  width: 20%;
+  height: 15%;
+  background-color: black;
+  color: white;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  border: 1.5px black solid;
+  border-radius: 12px;
+}
 

@@ -14,7 +14,7 @@ function App() {
 
   
 
-  const [folderDirectory, setFolderDirectory] = useState<string | string[] | null>("");
+  const [folderDirectory, setFolderDirectory] = useState<string | string[] | null>("Insert a directory");
   
   // Get the directory for where the file will be sorted
   async function select_directory(){
@@ -40,13 +40,15 @@ function App() {
     console.log(testi)
   }
 
+  const [sortBy, setSortBy] = useState<string | String | null>()
+
   useEffect(() => {
 
     // If the directory exists, proceed on sending to the backend
     // if(folderDirectory){
     //   send_back_directory()
     // }
-    
+
   }, [folderDirectory])
 
   return (
@@ -57,18 +59,19 @@ function App() {
      
       <div className="side_div">
         <div className="side_main_div">
-          <p className="side_components"> Folder Directory</p>
-          
+
+          <p className="side_components"> Folder Directory</p>  
           <button id="dir-button"  onClick={select_directory} hidden/>
-          <label htmlFor='dir-button' className="side_components_border"> {folderDirectory} hiwqeqew </label>
+          <label htmlFor='dir-button' className="side_components_border"> {folderDirectory}</label>
 
           <p className="side_components"> Sort by  </p>
           <div className="radio-div">
-            <input type="radio" id="radio-year" name="year" onChange={(e) => settesti(e.target.name)} hidden/> <label htmlFor="radio-year"> Year </label>
-            <input type="radio" id="radio-filetype" name="filetype" onChange={(e) => settesti(e.target.name)} hidden/> <label htmlFor="radio-filetype"> File Type </label>
-            
+            <input type="radio" id="radio-year" name="sortby" onChange={(e) => setSortBy("year")} hidden/> <label id="label-year" htmlFor="radio-year"> Year </label>
+            <input type="radio" id="radio-filetype" name="sortby" onChange={(e) => setSortBy("filetype")} hidden/> <label id="label-filetype" htmlFor="radio-filetype"> File Type </label>
           </div>
           
+          <p className="side_components" />
+          <button className="button-submit"> Sort </button>
         </div>
       </div>
     </div>
