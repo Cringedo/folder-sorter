@@ -35,25 +35,41 @@ function App() {
     })
   } 
 
+  const [testi, settesti] = useState("");
+  const test = () => {
+    console.log(testi)
+  }
+
   useEffect(() => {
 
     // If the directory exists, proceed on sending to the backend
-    if(folderDirectory){
-      send_back_directory()
-    }
+    // if(folderDirectory){
+    //   send_back_directory()
+    // }
     
   }, [folderDirectory])
 
   return (
     <div className="main_div">
       <div className="header_div">
-      <h1 className="header_text"> Cringedo's File Sorter </h1>
+        <h1 className="header_text"> Cringedo's File Sorter </h1>
       </div>
+     
       <div className="side_div">
-        Folder Directory: {folderDirectory}
-        <button onClick={select_directory} />
-      </div>
-      <div> 
+        <div className="side_main_div">
+          <p className="side_components"> Folder Directory:</p>
+          
+          <button id="dir-button"  onClick={select_directory} hidden/>
+          <label htmlFor='dir-button' className="side_components_border"> {folderDirectory} hiwqeqew </label>
+
+          <p className="side_components"> Sort by  </p>
+          <div className="radio-div">
+            <input type="radio" id="radio-year" name="year" onChange={(e) => settesti(e.target.name)} hidden/> <label htmlFor="radio-year"> Year </label>
+            <input type="radio" id="radio-filetype" name="filetype" onChange={(e) => settesti(e.target.name)} hidden/> <label htmlFor="radio-filetype"> File Type </label>
+            
+          </div>
+          
+        </div>
       </div>
     </div>
     

@@ -12,14 +12,14 @@
 .main_div{
   display: flex;
   flex-direction: row;
-  width: 100vw;
+  width: 95vw;
+  height: 95vh;
   font-family: 'Roboto', sans-serif;
 }
 
 .header_div {
   display: flex;
   flex: auto;
-  height: 100vh;
   width: 30%;
   justify-content: center;
   justify-items: center;
@@ -34,23 +34,63 @@
   width: 50%;
   height: 50%;
   justify-content: center;
-  align-items: center; /* Added this line */
+  align-items: center; 
   text-align: center;
-  
   font-weight: 900;
   border-right: 2px black solid;
   padding: 5px;
 }
 
 .side_div {
-  background: rgb(255, 214, 214);
   display: flex;
   flex: auto;
-  flex-direction: column;
   width: 70%;
-  height: 100vh;
+  height: 95vh;
   justify-content: center;
   justify-items: center;
   align-items: start;
-  padding-left: 10px;
+  padding-left: 20px;
 }
+
+.side_main_div {
+  display: flex;
+  flex: auto;
+  flex-direction: column;
+  height: 50%;
+  align-items: start;
+  text-align: center;
+  position: relative;
+  margin: auto;
+}
+
+.side_components {
+  /* display: flex;
+  flex: auto; */
+}
+
+.side_components_border{
+  display: flex;
+  border: 1.5px black solid;
+  width: 75%;
+  height: 15%;
+  border-radius: 12px;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
+}
+
+.radio-div{
+  width: 75%;
+  height: 10%;
+  text-align: center;
+  align-items: center;
+  display: grid;
+  grid-template-columns: auto auto auto;
+}
+
+.radio-div > * {
+  border-right: 2px black solid;
+}
+
+
