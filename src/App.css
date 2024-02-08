@@ -66,6 +66,7 @@
 .side_components {
   /* display: flex;
   flex: auto; */
+  font-weight: 700;
 }
 
 .side_components_border{
@@ -90,7 +91,15 @@
 }
 
 .radio-div > * {
+  transition: ease-in 1s;
   border-right: 2px black solid;
+  padding: 2px;
 }
+
+.radio-div > *:hover {
+  font-weight: 600;
+  
+}
+
 
 

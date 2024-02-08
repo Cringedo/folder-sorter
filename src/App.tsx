@@ -57,7 +57,7 @@ function App() {
      
       <div className="side_div">
         <div className="side_main_div">
-          <p className="side_components"> Folder Directory:</p>
+          <p className="side_components"> Folder Directory</p>
           
           <button id="dir-button"  onClick={select_directory} hidden/>
           <label htmlFor='dir-button' className="side_components_border"> {folderDirectory} hiwqeqew </label>
