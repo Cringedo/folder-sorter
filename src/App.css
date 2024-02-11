@@ -96,16 +96,18 @@
   padding: 2px;
 }
 
-/* .radio-div > *:hover {
-  font-weight: 600;
-} */
+.radio-div > *:hover {
+  text-decoration-line: underline;
+}
 
 #radio-year:checked + #label-year {
   text-decoration-line: underline;
+  font-weight: 600;
 }
 
 #radio-filetype:checked + #label-filetype {
   text-decoration-line: underline;
+  font-weight: 600;
 }
 
 .button-submit {

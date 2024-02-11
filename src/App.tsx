@@ -23,9 +23,11 @@ function App() {
     console.log(`You've picked: ${directory}`);
   }
 
+  const [sortBy, setSortBy] = useState<string | String | null>()
+
   // Send directory to the back
   async function send_back_directory(){
-    await invoke("get_the_directory", {directory: folderDirectory})
+    await invoke("get_the_directory", {directory: folderDirectory, sortType: sortBy})
     .then((message) => {
       console.log(message);
       
@@ -40,7 +42,6 @@ function App() {
     console.log(testi)
   }
 
-  const [sortBy, setSortBy] = useState<string | String | null>()
 
   useEffect(() => {
 
@@ -66,12 +67,12 @@ function App() {
 
           <p className="side_components"> Sort by  </p>
           <div className="radio-div">
-            <input type="radio" id="radio-year" name="sortby" onChange={(e) => setSortBy("year")} hidden/> <label id="label-year" htmlFor="radio-year"> Year </label>
-            <input type="radio" id="radio-filetype" name="sortby" onChange={(e) => setSortBy("filetype")} hidden/> <label id="label-filetype" htmlFor="radio-filetype"> File Type </label>
+            <input type="radio" id="radio-year" name="sortby" onChange={() => setSortBy("year")} hidden/> <label id="label-year" htmlFor="radio-year"> Year </label>
+            <input type="radio" id="radio-filetype" name="sortby" onChange={() => setSortBy("filetype")} hidden/> <label id="label-filetype" htmlFor="radio-filetype"> File Type </label>
           </div>
           
           <p className="side_components" />
-          <button className="button-submit"> Sort </button>
+          <button className="button-submit" onClick={send_back_directory}> Sort </button>
         </div>
       </div>
     </div>

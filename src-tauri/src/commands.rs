@@ -37,8 +37,10 @@ pub struct FileInfo {
 
 // TODO: Return RESULT to the frontend
 #[tauri::command]
-pub async fn get_the_directory(directory: String) -> Result<String, String> {
+pub async fn get_the_directory(directory: String, sort_type: String) -> Result<String, String> {
     let directory_log: &String = &directory.clone();
+    let sort_type_log: &String = &sort_type.clone();
+
     if directory.is_empty() {
         let err_msg: String = format!("It looks like the directory sent is empty! Directory: {}", directory_log);
         Err(err_msg.into())
@@ -46,8 +48,25 @@ pub async fn get_the_directory(directory: String) -> Result<String, String> {
     else {
         let files: Vec<FileInfo> = get_all_files(directory).await;
         let years: Vec<String> = get_all_years(&files).await;
-        create_dir_by_years(directory_log, &years).await;
-        copy_files_into_folders(directory_log, &files).await;
+        
+        // Sort based on the sort type given from the frontend
+        match sort_type_log.as_str() {
+            "year" => {
+                create_dir_by_years(directory_log, &years).await;
+                copy_files_into_folders(directory_log, &files).await;
+            },
+            "filetype" => {
+
+            },
+            _ => {
+                // If 'nothing' is somehow get into the this, just use "year"
+                create_dir_by_years(directory_log, &years).await;
+                copy_files_into_folders(directory_log, &files).await;
+            }
+            
+        }
+
+
 
         // let ok_msg: String = format!("[🦀] Success!\nDirectory: {}\nFiles: {:?}\nYears: {:?}", directory_log, files, years);
         let ok_msg: String = format!("[🦀] Success!\nDirectory: {}\nFiles: {:?}\nYears: {:?}", directory_log, files, years);
@@ -79,6 +98,8 @@ pub async fn get_all_files(path: String) -> Vec<FileInfo>{
                         // Get the file format/type  
                         let file_ext: &str = filename.split(".").last().unwrap();
                         let file_type: FileType;
+                        
+                        // 🚧TODO: Update this to possible file format
                         match file_ext {
                             "wav" => file_type = FileType::Music,
                             "mp3" => file_type = FileType::Video,
