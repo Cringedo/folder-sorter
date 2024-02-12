@@ -82,6 +82,10 @@
   justify-items: center;
 }
 
+.side_components_border:hover{
+ background: rgb(184, 184, 184);
+}
+
 .radio-div{
   width: 75%;
   height: 10%;
@@ -147,14 +151,17 @@ input[type="radio"]:checked + #sort-button {
   display: flex;
   justify-content: right;
   align-items: center;
+  animation:slide-bottom .5s cubic-bezier(.25,.46,.45,.94) both
 }
 
 .display-block {
   display: block;
+  
 }
 
 .display-none {
   display: none;
 }
 
-
+@keyframes slide-bottom{0%{transform:translateY(-100px)}100%{transform:translateY(0px)}}
+@keyframes scale-up-center{0%{transform:scale(1)}100%{transform:scale(1.05)}}

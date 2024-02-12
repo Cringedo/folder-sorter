@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
 import { dialog, fs } from "@tauri-apps/api";
 import "./App.css";
-import Modal from "./Model.tsx";;
+import Modal from "./ErrModel.tsx";;
 
 function App() {
   const [greetMsg, setGreetMsg] = useState([]);
@@ -38,10 +38,13 @@ function App() {
   } 
 
   const [showModal, setShowModal] = useState(false);
+  const [err, setErr] = useState("ERR: Invalid Directory, please resubmit");
 
   const check_if_input_error = (): boolean => {
     let is_error: boolean = false;
+    setErr("Looks fine!")
     if(!sortBy || !folderDirectory || folderDirectory == "Insert a directory"){
+      setErr("ERR: Invalid Directory.\nPlease double check the directory.");
       console.log(`It looks like that:\n${sortBy}\n${folderDirectory}`);
       is_error = true;
     }
@@ -49,9 +52,14 @@ function App() {
     return is_error;
   };
 
-    const closeModal = () => {
-        setShowModal(false);
-    };
+  const closeModal = () => {
+      setShowModal(false);
+  };
+
+  // TODO: updates the text inside button to match the current progress
+  const showProgess = () => {
+
+  }
 
   useEffect(() => {
 
@@ -64,10 +72,16 @@ function App() {
 
   return (
     <div className="main_div">
-      <div className="App">
+      <div>
             <button onClick={check_if_input_error}>Open Modal</button>
             <Modal show={showModal} handleClose={closeModal}>
-                <p>Error Occured: Please check the input again!</p>
+                <p>{err}</p>
+            </Modal>
+        </div>
+        <div>
+            <button onClick={check_if_input_error}>Open Modal</button>
+            <Modal show={showModal} handleClose={closeModal}>
+                <p>{err}</p>
             </Modal>
         </div>
       <div className="header_div">
