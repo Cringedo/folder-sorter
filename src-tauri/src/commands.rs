@@ -2,7 +2,6 @@ extern crate chrono;
 use std::{fmt::format, fs::{self, DirEntry}, path, time::SystemTime, vec};
 use chrono::offset::Utc;
 use chrono::DateTime;
-use tauri::api::file;
 use std::path::Path;
 
 #[tauri::command]
@@ -22,9 +21,21 @@ pub async fn create_folder(folder_name: String) -> path::PathBuf {
     path::PathBuf::from(root_path)
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 enum FileType {
     Image, Video, Music, Executable, Other
+}
+
+impl FileType {
+    fn as_str(&self) -> &str {
+        match &self {
+            FileType::Music => "music",
+            FileType::Video => "video",
+            FileType::Image => "image",
+            FileType::Executable => "executable",
+            FileType::Other => "other"
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -47,29 +58,15 @@ pub async fn get_the_directory(directory: String, sort_type: String) -> Result<S
     }
     else {
         let files: Vec<FileInfo> = get_all_files(directory).await;
-        let years: Vec<String> = get_all_years(&files).await;
-        
-        // Sort based on the sort type given from the frontend
-        match sort_type_log.as_str() {
-            "year" => {
-                create_dir_by_years(directory_log, &years).await;
-                copy_files_into_folders(directory_log, &files).await;
-            },
-            "filetype" => {
-
-            },
-            _ => {
-                // If 'nothing' is somehow get into the this, just use "year"
-                create_dir_by_years(directory_log, &years).await;
-                copy_files_into_folders(directory_log, &files).await;
-            }
+        let sort_details: Vec<String> = get_all_sort_values(&files, &sort_type_log.as_str()).await;
+        create_dir_by_sort_values(directory_log, &sort_details).await;
+        copy_files_into_folders(directory_log, &files, &sort_type).await;
             
-        }
 
 
 
         // let ok_msg: String = format!("[🦀] Success!\nDirectory: {}\nFiles: {:?}\nYears: {:?}", directory_log, files, years);
-        let ok_msg: String = format!("[🦀] Success!\nDirectory: {}\nFiles: {:?}\nYears: {:?}", directory_log, files, years);
+        let ok_msg: String = format!("[🦀] Success!\nDirectory: {}\nFiles: {:?}\nSort Details: {:?}", directory_log, files, sort_details);
 
         // let files_str: String = files.join(", ");
         // let ok_msg: String = format!("[🦀] Success!\nDirectory: {}\nFiles: {:?}", directory_log, files_str);
@@ -104,6 +101,7 @@ pub async fn get_all_files(path: String) -> Vec<FileInfo>{
                             "wav" => file_type = FileType::Music,
                             "mp3" => file_type = FileType::Video,
                             ".png" => file_type = FileType::Image,
+                            ".exe" => file_type = FileType::Executable,
                             _ => file_type = FileType::Other
                         }
                         
@@ -131,33 +129,53 @@ pub async fn get_all_files(path: String) -> Vec<FileInfo>{
     files
 }
 
-pub async fn get_all_years(files: &Vec<FileInfo>) -> Vec<String>{
-    let mut available_years: Vec<String> = Vec::new();
-    for file in files {
-        let year = file.year.clone();
-        if !available_years.contains(&year) {
-           available_years.push(year) 
+pub async fn get_all_sort_values(files: &Vec<FileInfo>, sort_type: &str) -> Vec<String>{
+    let mut available_sort_values: Vec<String> = Vec::new();
+    match sort_type {
+        "year" => {
+            for file in files {
+                let year = file.year.clone();
+                if !available_sort_values.contains(&year) {
+                   available_sort_values.push(year) 
+                }
+            }
+        },
+        "filetype" => {
+            for file in files {
+                let file_type = file.file_type.as_str().to_string();
+                if !available_sort_values.contains(&file_type) {
+                   available_sort_values.push(file_type) 
+                }
+            }
+        },
+        _ => {
+
         }
     }
-    available_years
+    available_sort_values
 }
 
-pub async fn create_dir_by_years(directory: &String, years: &Vec<String>) {
+pub async fn create_dir_by_sort_values(directory: &String, years: &Vec<String>) {
     for year in years {
         let folder_dir = format!("{}/{}", directory, year);
         match fs::create_dir(folder_dir.clone()){
-            Ok(_) => print!("Success! Years for folders have been created!"),
+            Ok(_) => print!("Success! Sort values for folders have been created!"),
             Err(e) => print!("{}", e)
         }
     }
 }
 
 // Copy to the files into the folders
-pub async fn copy_files_into_folders(directory: &String, files: &Vec<FileInfo>){
+pub async fn copy_files_into_folders(directory: &String, files: &Vec<FileInfo>, sort_type: &str){
     for file in files{
         let old_folder_dir = Path::new(directory).join(&file.name);
-        let new_folder_dir = Path::new(directory).join(&file.year).join(&file.name);
-        let _ = fs::copy(old_folder_dir, new_folder_dir);
+        let new_folder_dir = Path::new(directory);
+        let target_folder_dir =  match sort_type {
+            "year" => new_folder_dir.join(&file.year).join(&file.name),
+            "filetype" => new_folder_dir.join(&file.file_type.as_str().to_string()).join(&file.name),
+            _ => new_folder_dir.join(&file.year).join(&file.name)
+        };
+        let _ = fs::copy(old_folder_dir, target_folder_dir);
     }
 }
 
