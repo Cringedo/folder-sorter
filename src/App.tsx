@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
 import { dialog, fs } from "@tauri-apps/api";
 import "./App.css";
+import Modal from "./Model.tsx";;
 
 function App() {
   const [greetMsg, setGreetMsg] = useState([]);
@@ -11,8 +12,6 @@ function App() {
     setGreetMsg(await invoke("get_all_files"));
     console.log(greetMsg);
   }
-
-  
 
   const [folderDirectory, setFolderDirectory] = useState<string | string[] | null>("Insert a directory");
   
@@ -27,21 +26,32 @@ function App() {
 
   // Send directory to the back
   async function send_back_directory(){
-    await invoke("get_the_directory", {directory: folderDirectory, sortType: sortBy})
-    .then((message) => {
-      console.log(message);
-      
-    })
-    .catch((err) => {
-      console.log(err);
-    })
+    if(check_if_input_error() == false)
+      await invoke("get_the_directory", {directory: folderDirectory, sortType: sortBy})
+      .then((message) => {
+        console.log(message);
+        
+      })
+      .catch((err) => {
+        console.log(err);
+      })
   } 
 
-  const [testi, settesti] = useState("");
-  const test = () => {
-    console.log(testi)
-  }
+  const [showModal, setShowModal] = useState(false);
 
+  const check_if_input_error = (): boolean => {
+    let is_error: boolean = false;
+    if(!sortBy || !folderDirectory || folderDirectory == "Insert a directory"){
+      console.log(`It looks like that:\n${sortBy}\n${folderDirectory}`);
+      is_error = true;
+    }
+    setShowModal(is_error);
+    return is_error;
+  };
+
+    const closeModal = () => {
+        setShowModal(false);
+    };
 
   useEffect(() => {
 
@@ -54,6 +64,12 @@ function App() {
 
   return (
     <div className="main_div">
+      <div className="App">
+            <button onClick={check_if_input_error}>Open Modal</button>
+            <Modal show={showModal} handleClose={closeModal}>
+                <p>Error Occured: Please check the input again!</p>
+            </Modal>
+        </div>
       <div className="header_div">
         <h1 className="header_text"> Cringedo's File Sorter </h1>
       </div>

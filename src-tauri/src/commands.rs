@@ -113,7 +113,10 @@ pub async fn get_all_files(path: String) -> Vec<FileInfo>{
                             file_type: file_type
                         };       
 
-                        files.push(file)
+                        // Only file is pushed to the 'files'
+                        if entry.metadata().unwrap().is_file(){
+                            files.push(file)
+                        }
                     },
                     Err(_) => {
                 
@@ -155,8 +158,8 @@ pub async fn get_all_sort_values(files: &Vec<FileInfo>, sort_type: &str) -> Vec<
     available_sort_values
 }
 
-pub async fn create_dir_by_sort_values(directory: &String, years: &Vec<String>) {
-    for year in years {
+pub async fn create_dir_by_sort_values(directory: &String, sort_values: &Vec<String>) {
+    for year in sort_values {
         let folder_dir = format!("{}/{}", directory, year);
         match fs::create_dir(folder_dir.clone()){
             Ok(_) => print!("Success! Sort values for folders have been created!"),
