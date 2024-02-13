@@ -22,42 +22,56 @@ function App() {
     console.log(`You've picked: ${directory}`);
   }
 
-  const [sortBy, setSortBy] = useState<string | String | null>()
+  const [sortBy, SetSortBy] = useState<string | String | null>()
+  const [progress, SetProgress] = useState<string | string[] | null> ("Sort")
+  const [isSorting, SetIsSorting] = useState(false);
 
   // Send directory to the back
   async function send_back_directory(){
-    if(check_if_input_error() == false)
+    if(check_if_input_error() == false && progress != "Sorting in progress.."){
+      SetIsSorting(true);
+      SetProgress("Sorting in progress..")
       await invoke("get_the_directory", {directory: folderDirectory, sortType: sortBy})
       .then((message) => {
         console.log(message);
-        
+        SetProgress("Sort Finished")
+        SetIsSorting(false)
       })
       .catch((err) => {
         console.log(err);
       })
+    }
   } 
 
-  const [showModal, setShowModal] = useState(false);
-  const [err, setErr] = useState("ERR: Invalid Directory, please resubmit");
+  const [showModal, SetShowModal] = useState(false);
+  const [err, SetErr] = useState("ERR: Invalid Directory, please resubmit");
 
   const check_if_input_error = (): boolean => {
     let is_error: boolean = false;
-    setErr("Looks fine!")
+    SetErr("Looks fine!")
     if(!sortBy || !folderDirectory || folderDirectory == "Insert a directory"){
-      setErr("ERR: Invalid Directory.\nPlease double check the directory.");
+      SetErr("ERR: Invalid Directory.\nPlease double check the directory.");
+      SetProgress("Sort")
       console.log(`It looks like that:\n${sortBy}\n${folderDirectory}`);
       is_error = true;
     }
-    setShowModal(is_error);
+    SetShowModal(is_error);
     return is_error;
   };
 
   const closeModal = () => {
-      setShowModal(false);
+      SetShowModal(false);
   };
 
+  
   // TODO: updates the text inside button to match the current progress
   const showProgess = () => {
+    if(!err.match("Looks fine!")){
+      SetProgress("Sort")
+      SetIsSorting(false)
+      console.log(isSorting);
+      return
+    }
 
   }
 
@@ -68,18 +82,20 @@ function App() {
     //   send_back_directory()
     // }
 
-  }, [folderDirectory])
+    showProgess()
+   
+    
+
+  }, [folderDirectory, err, isSorting])
 
   return (
     <div className="main_div">
       <div>
-            <button onClick={check_if_input_error}>Open Modal</button>
             <Modal show={showModal} handleClose={closeModal}>
                 <p>{err}</p>
             </Modal>
         </div>
         <div>
-            <button onClick={check_if_input_error}>Open Modal</button>
             <Modal show={showModal} handleClose={closeModal}>
                 <p>{err}</p>
             </Modal>
@@ -97,12 +113,12 @@ function App() {
 
           <p className="side_components"> Sort by  </p>
           <div className="radio-div">
-            <input type="radio" id="radio-year" name="sortby" onChange={() => setSortBy("year")} hidden/> <label id="label-year" htmlFor="radio-year"> Year </label>
-            <input type="radio" id="radio-filetype" name="sortby" onChange={() => setSortBy("filetype")} hidden/> <label id="label-filetype" htmlFor="radio-filetype"> File Type </label>
+            <input type="radio" id="radio-year" name="sortby" onChange={() => SetSortBy("year")} hidden/> <label id="label-year" htmlFor="radio-year"> Year </label>
+            <input type="radio" id="radio-filetype" name="sortby" onChange={() => SetSortBy("filetype")} hidden/> <label id="label-filetype" htmlFor="radio-filetype"> File Type </label>
           </div>
           
           <p className="side_components" />
-          <button className="button-submit" onClick={send_back_directory}> Sort </button>
+          <button className="button-submit" onClick={send_back_directory} disabled={isSorting}> {progress}</button>
         </div>
       </div>
     </div>

@@ -23,7 +23,7 @@ pub async fn create_folder(folder_name: String) -> path::PathBuf {
 
 #[derive(Debug, Clone)]
 enum FileType {
-    Image, Video, Music, Executable, Other
+    Image, Video, Music, Executable, Document, Other
 }
 
 impl FileType {
@@ -33,6 +33,7 @@ impl FileType {
             FileType::Video => "video",
             FileType::Image => "image",
             FileType::Executable => "executable",
+            FileType::Document => "document",
             FileType::Other => "other"
         }
     }
@@ -100,8 +101,9 @@ pub async fn get_all_files(path: String) -> Vec<FileInfo>{
                         match file_ext {
                             "wav" => file_type = FileType::Music,
                             "mp3" => file_type = FileType::Video,
-                            ".png" => file_type = FileType::Image,
-                            ".exe" => file_type = FileType::Executable,
+                            "png" => file_type = FileType::Image,
+                            "exe" => file_type = FileType::Executable,
+                            "pdf" => file_type = FileType::Document,
                             _ => file_type = FileType::Other
                         }
                         
