@@ -74,12 +74,13 @@
   display: flex;
   border: 1.5px black solid;
   width: 75%;
-  height: 15%;
+  height: 25%;
   border-radius: 12px;
   text-align: center;
   align-items: center;
   justify-content: center;
   justify-items: center;
+  transition: all 0.5s;
 }
 
 .side_components_border:hover{
@@ -93,6 +94,7 @@
   align-items: center;
   display: grid;
   grid-template-columns: auto auto auto;
+  
 }
 
 .radio-div > * {
@@ -102,6 +104,7 @@
 
 .radio-div > *:hover {
   text-decoration-line: underline;
+  transition: all 0.5s;
 }
 
 #radio-year:checked + #label-year {
@@ -119,20 +122,42 @@ input[type="radio"]:checked + #sort-button {
   font-weight: 700;
 }
 
+.div-submit {
+  width: 100%;
+  height: 45%;
+  align-items: start;
+  display: flex;
+  flex-direction: rows;
+ 
+}
+
 .button-submit {
-  width: 20%;
-  height: 15%;
+  width: 15%;
+  height: 45%;
   background-color: black;
   color: white;
   font-family: 'Roboto', sans-serif;
   font-weight: 500;
-  border: 1.5px black solid;
+  border: 1.5px black solid;  
   border-radius: 12px;
+  transition: all 0.5s cubic-bezier(.25,.46,.45,.94);
 }
 
 .button-submit:disabled{
   background: white;
   color:black;
+}
+
+.button-submit:hover{
+  transform: scale(1.1);
+}
+
+.text-progress{
+  display: flex;
+  position: relative;
+  top: -10px;
+  width: 20%;
+  padding-left: 20px;
 }
 
 /* Modal.css */

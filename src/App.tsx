@@ -118,7 +118,10 @@ function App() {
           </div>
           
           <p className="side_components" />
-          <button className="button-submit" onClick={send_back_directory} disabled={isSorting}> {progress}</button>
+          <div className="div-submit">
+            <button className="button-submit" onClick={send_back_directory} disabled={isSorting}> {progress}</button>
+            <p className="text-progress">test</p>
+          </div>
         </div>
       </div>
     </div>
