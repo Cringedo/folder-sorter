@@ -1,17 +1,18 @@
 import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
-import { dialog, fs } from "@tauri-apps/api";
+import { dialog} from "@tauri-apps/api";
+import { AiOutlineCheck } from "react-icons/ai";
 import "./App.css";
 import Modal from "./ErrModel.tsx";;
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState([]);
+  // const [greetMsg, setGreetMsg] = useState([]);
   
 
-  async function print_something(){
-    setGreetMsg(await invoke("get_all_files"));
-    console.log(greetMsg);
-  }
+  // async function print_something(){
+  //   setGreetMsg(await invoke("get_all_files"));
+  //   console.log(greetMsg);
+  // }
 
   const [folderDirectory, setFolderDirectory] = useState<string | string[] | null>("Insert a directory");
   
@@ -22,20 +23,24 @@ function App() {
     console.log(`You've picked: ${directory}`);
   }
 
+  enum SortState {
+    START, SORTING, DONE
+  }
+
   const [sortBy, SetSortBy] = useState<string | String | null>()
   const [progress, SetProgress] = useState<string | string[] | null> ("Sort")
-  const [isSorting, SetIsSorting] = useState(false);
+  const [isSorting, SetIsSorting] = useState<SortState>(SortState.START);
 
   // Send directory to the back
   async function send_back_directory(){
-    if(check_if_input_error() == false && progress != "Sorting in progress.."){
-      SetIsSorting(true);
+    if(check_if_input_error() == false && progress != "Sorting in progress.." && isSorting != SortState.SORTING){
+      SetIsSorting(SortState.SORTING);
       SetProgress("Sorting in progress..")
       await invoke("get_the_directory", {directory: folderDirectory, sortType: sortBy})
       .then((message) => {
         console.log(message);
         SetProgress("Sort Finished")
-        SetIsSorting(false)
+        SetIsSorting(SortState.DONE)
       })
       .catch((err) => {
         console.log(err);
@@ -68,7 +73,7 @@ function App() {
   const showProgess = () => {
     if(!err.match("Looks fine!")){
       SetProgress("Sort")
-      SetIsSorting(false)
+      SetIsSorting(SortState.START)
       console.log(isSorting);
       return
     }
@@ -119,8 +124,11 @@ function App() {
           
           <p className="side_components" />
           <div className="div-submit">
-            <button className="button-submit" onClick={send_back_directory} disabled={isSorting}> {progress}</button>
-            <p className="text-progress">test</p>
+            <button className="button-submit" onClick={send_back_directory} disabled={isSorting == SortState.SORTING}> {progress}</button>
+            {
+              isSorting == SortState.DONE? <p className="text-progress"><AiOutlineCheck /></p>
+              : <></>
+            }
           </div>
         </div>
       </div>

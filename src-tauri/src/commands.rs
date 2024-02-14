@@ -1,5 +1,5 @@
 extern crate chrono;
-use std::{fmt::format, fs::{self, DirEntry}, path, time::SystemTime, vec};
+use std::{fs::{self, Metadata}, io, path, time::SystemTime};
 use chrono::offset::Utc;
 use chrono::DateTime;
 use std::path::Path;
@@ -90,7 +90,8 @@ pub async fn get_all_files(path: String) -> Vec<FileInfo>{
                         let filename = entry.file_name().to_str().unwrap().to_string();
                        
                         // Get the file year
-                        let datetime: DateTime<Utc> = entry.metadata().unwrap().created().unwrap().into();
+                        // let datetime: DateTime<Utc> = entry.metadata().unwrap().created().unwrap().into();
+                        let datetime: DateTime<Utc> = get_file_date(entry.metadata()).await;
                         let file_year: String = datetime.format("%Y").to_string();
                         
                         // Get the file format/type  
@@ -132,6 +133,18 @@ pub async fn get_all_files(path: String) -> Vec<FileInfo>{
         }
     }
     files
+}
+
+// Get all the needed years
+pub async fn get_file_date(file_meta: io::Result<Metadata>) -> DateTime<Utc>{
+    let file_meta_clone = file_meta.unwrap().clone();
+    let mut dates: Vec<DateTime<Utc>> = Vec::new();
+
+    dates.push(file_meta_clone.created().unwrap_or(SystemTime::now()).into());
+    dates.push(file_meta_clone.accessed().unwrap_or(SystemTime::now()).into());
+    dates.push(file_meta_clone.modified().unwrap_or(SystemTime::now()).into());
+    
+    *dates.iter().min().unwrap()
 }
 
 pub async fn get_all_sort_values(files: &Vec<FileInfo>, sort_type: &str) -> Vec<String>{
