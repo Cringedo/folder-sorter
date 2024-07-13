@@ -1,7 +1,12 @@
-# Tauri + React + Typescript
+# Cringedo's Folder Sorter
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+Current Version: developement.
+--------------------
+!! Might finish to soon as I don't have any opportunity to fully develop this folder sorter yet. 
+--------------------
 
-## Recommended IDE Setup
+It is a sorter that will sort all the files within a folder. Current sort only by: 
+1. Date
+2. File Type
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+Developed using Tauri together with React and TSX. 
